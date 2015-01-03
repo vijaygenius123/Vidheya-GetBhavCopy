@@ -14,10 +14,28 @@ namespace Vidheya_GetBhavCopy
         public Form1()
         {
             InitializeComponent();
-            SaveLocationTextBox.Text = Properties.Settings.Default.SaveLocation;
-
+            MyInitialize();
         }
 
+        private void MyInitialize()
+        {
+            SaveLocationTextBox.Text = Properties.Settings.Default.SaveLocation;
+            dateTimePicker1.MaxDate = DateTime.Now;
+            dateTimePicker2.MaxDate = DateTime.Now;
+            //MessageBox.Show("Welcome");
+    
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+         //   DialogResult result = MessageBox.Show("Do you really wanna exit ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+         //   if (result == DialogResult.No)
+         //   {
+         //       e.Cancel = true;
+         //   }
+
+        } 
 
 
 
@@ -36,6 +54,11 @@ namespace Vidheya_GetBhavCopy
 
             }
 
+
+        }
+
+        private void dateTimePicker1_ValueChanged(object sender, EventArgs e)
+        {
 
         }
     }

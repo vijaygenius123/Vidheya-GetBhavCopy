@@ -39,6 +39,7 @@
             this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
+            this.progressBar = new System.Windows.Forms.ProgressBar();
             this.Downloader.SuspendLayout();
             this.Download.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -57,6 +58,7 @@
             // 
             // Download
             // 
+            this.Download.Controls.Add(this.progressBar);
             this.Download.Controls.Add(this.label3);
             this.Download.Controls.Add(this.label2);
             this.Download.Controls.Add(this.dateTimePicker2);
@@ -78,6 +80,7 @@
             this.button1.TabIndex = 1;
             this.button1.Text = "Download";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // dateTimePicker1
             // 
@@ -151,6 +154,13 @@
             this.label3.TabIndex = 4;
             this.label3.Text = "End Date";
             // 
+            // progressBar
+            // 
+            this.progressBar.Location = new System.Drawing.Point(102, 153);
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(200, 23);
+            this.progressBar.TabIndex = 5;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -182,6 +192,7 @@
         private System.Windows.Forms.DateTimePicker dateTimePicker2;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.ProgressBar progressBar;
 
     }
 }

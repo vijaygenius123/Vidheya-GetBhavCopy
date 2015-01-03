@@ -6,6 +6,11 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Net;
+using System.IO.Compression;
+using System.IO;
+using ICSharpCode.SharpZipLib.Core;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace Vidheya_GetBhavCopy
 {
@@ -23,19 +28,19 @@ namespace Vidheya_GetBhavCopy
             dateTimePicker1.MaxDate = DateTime.Now;
             dateTimePicker2.MaxDate = DateTime.Now;
             //MessageBox.Show("Welcome");
-    
+
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
 
-         //   DialogResult result = MessageBox.Show("Do you really wanna exit ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-         //   if (result == DialogResult.No)
-         //   {
-         //       e.Cancel = true;
-         //   }
+            //   DialogResult result = MessageBox.Show("Do you really wanna exit ?", "Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            //   if (result == DialogResult.No)
+            //   {
+            //       e.Cancel = true;
+            //   }
 
-        } 
+        }
 
 
 
@@ -49,7 +54,8 @@ namespace Vidheya_GetBhavCopy
                 string sSelectedPath = FileSave.SelectedPath;
                 Properties.Settings.Default.SaveLocation = sSelectedPath;
                 Properties.Settings.Default.Save();
-                MessageBox.Show("Selected Path " + sSelectedPath);
+                SaveLocationTextBox.Text = sSelectedPath.ToString();
+                //MessageBox.Show("Selected Path " + sSelectedPath);
 
 
             }
@@ -61,5 +67,84 @@ namespace Vidheya_GetBhavCopy
         {
 
         }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var thismonth = dateTimePicker1.Value.Month;
+            var thisday = dateTimePicker1.Value.Day;
+            var thisyear = dateTimePicker1.Value.Year;
+            var thisdayname = dateTimePicker1.Value.DayOfWeek;
+            string sthismonth = dateTimePicker1.Value.Month.ToString();
+            string sthisday = dateTimePicker1.Value.Day.ToString();
+            string sthisyear = dateTimePicker1.Value.Year.ToString();
+            string sthisdayname = thisdayname.ToString();
+            if (sthisdayname == "Sunday" || sthisdayname == "Saturday")
+            {
+                NotValidDay();
+            }
+            else
+            {
+                if (thisday <= 10)
+                {
+                    sthisday = '0' + sthisday;
+                    // MessageBox.Show(sthisday);
+                }
+                string monthsel = "";
+                switch (thismonth)
+                {
+                    case 1: monthsel = "JAN"; break;
+                    case 2: monthsel = "FEB"; break;
+                    case 3: monthsel = "MAR"; break;
+                    case 4: monthsel = "APR"; break;
+                    case 5: monthsel = "MAY"; break;
+                    case 6: monthsel = "JUN"; break;
+                    case 7: monthsel = "JUL"; break;
+                    case 8: monthsel = "AUG"; break;
+                    case 9: monthsel = "SEP"; break;
+                    case 10: monthsel = "OCT"; break;
+                    case 11: monthsel = "NOV"; break;
+                    case 12: monthsel = "DEC"; break;
+
+                }
+                string mydate = sthisday + "/" + monthsel + "/" + sthisyear;
+                string DLink = "http://www.nseindia.com/content/historical/EQUITIES/" + thisyear + "/" + monthsel + "/cm" + sthisday + monthsel + thisyear + "bhav.csv.zip";
+                string SaveFileTarget = GetLocation();
+                string SFile = SaveFileTarget+sthisday + "-" + monthsel + "-" + thisyear;
+
+                // string SaveFileName= sthisday + "-" + monthsel + "-" + thisyear ;
+                WebClient webClient = new WebClient();
+                webClient.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8";
+                webClient.Headers.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.64 Safari/537.31");
+                webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
+                webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ProgressChanged);
+                webClient.DownloadFileAsync(new Uri(DLink), @SFile);
+                while (webClient.IsBusy) ;
+                FastZip zip = new FastZip();
+                zip.ExtractZip(SFile, SaveFileTarget, "");
+            }
+        }
+        private void NotValidDay()
+        {
+            MessageBox.Show("Not A Valid Day");
+            Form1 Again = new Form1();
+
+        }
+        private string GetLocation()
+        {
+            string SaveFileTarget = Properties.Settings.Default.SaveLocation;
+            return SaveFileTarget;
+        }
+        private void ProgressChanged(object sender, DownloadProgressChangedEventArgs e)
+        {
+            progressBar.Value = e.ProgressPercentage;
+        }
+
+        private void Completed(object sender, AsyncCompletedEventArgs e)
+        {
+            MessageBox.Show("Download completed!");
+        }
+
     }
+
+
 }

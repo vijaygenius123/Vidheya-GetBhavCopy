@@ -17,6 +17,8 @@ namespace Vidheya_GetBhavCopy
 {
     public partial class Form1 : Form
     {
+
+        string path,SaveFileTarget,sthisday,monthsel,SFile,thisyear;
         public Form1()
         {
             InitializeComponent();
@@ -122,31 +124,10 @@ namespace Vidheya_GetBhavCopy
                 FastZip zip = new FastZip();
                 zip.ExtractZip(SFile, SaveFileTarget, "");
                 //Console.WriteLine(SaveFileTarget);
-                string path = @SaveFileTarget+"/cm"+sthisday+monthsel+thisyear+"bhav.csv";
-                string converted = @SFile + "_Converted.csv";
-                StreamWriter sw = new StreamWriter(@converted);
-                StreamReader sr = new StreamReader(@path);
-                while (!sr.EndOfStream)
-                {
-                    string line = sr.ReadLine();
-                    string[] results = line.Split(',');
-                    string Symbol = results[0].ToString();
-                    string Open = results[2].ToString();
-                    string High = results[3].ToString();
-                    string Low = results[4].ToString();
-                    string Close = results[5].ToString();
-                    string Last = results[6].ToString();
-                    string Volume = results[8].ToString();
-                    string Date = results[10].ToString();
-                    //MessageBox.Show(Symbol + " " + Open + " " + High + " " + Low + " " + Close + " " +Last +" "+Volume+" "+Date);
-                    string processedline = Symbol + "," + Date + "," + Open + "," + High + "," + Low + "," + Close + "," + Last + "," + Volume;
-                    sw.WriteLine(processedline);
-                }
-                sr.Close();
-                sw.Close();
+                ConverToFormat(SaveFileTarget, sthisday,monthsel,sthisyear,thismonth.ToString());
                 File.Delete(SFile);
-                File.Delete(@path);
-                MessageBox.Show("Done");
+                
+               // MessageBox.Show("Done");
 
 
 
@@ -174,6 +155,41 @@ namespace Vidheya_GetBhavCopy
         private void Completed(object sender, AsyncCompletedEventArgs e)
         {
             MessageBox.Show("Download completed!");
+        }
+
+        private void ConverToFormat(string SaveFileTarget, string day,string smonth,string year,string thismonth)
+        {
+            int i = 0;
+            string path = @SaveFileTarget + "/cm" + day + smonth + year + "bhav.csv";
+            string converted = @SaveFileTarget+"/"+day+smonth+year+ ".txt";
+            StreamWriter sw = new StreamWriter(@converted);
+            StreamReader sr = new StreamReader(@path);
+            while (!sr.EndOfStream)
+            {
+                string line = sr.ReadLine();
+                string[] results = line.Split(',');
+                string Symbol = results[0].ToString();
+                string Open = results[2].ToString();
+                string High = results[3].ToString();
+                string Low = results[4].ToString();
+                string Close = results[5].ToString();
+                //string Last = results[6].ToString();
+                string Volume = results[8].ToString();
+                //string Date = results[10].ToString();
+                string Date = year + thismonth + day;
+            //MessageBox.Show(Symbol + " " + Open + " " + High + " " + Low + " " + Close + " " +Last +" "+Volume+" "+Date);
+                string processedline = Symbol + "," + Date + "," + Open + "," + High + "," + Low + "," + Close + "," + Volume;
+                if (i == 0)
+                {
+                    i++;
+                }
+                else
+                    sw.WriteLine(processedline);
+            }
+            sr.Close();
+            sw.Close();
+            File.Delete(@path);
+ 
         }
 
         private void Download_Click(object sender, EventArgs e)

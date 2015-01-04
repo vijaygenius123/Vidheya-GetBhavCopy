@@ -12,6 +12,7 @@ using System.IO;
 using ICSharpCode.SharpZipLib.Core;
 using ICSharpCode.SharpZipLib.Zip;
 
+
 namespace Vidheya_GetBhavCopy
 {
     public partial class Form1 : Form
@@ -26,7 +27,7 @@ namespace Vidheya_GetBhavCopy
         {
             SaveLocationTextBox.Text = Properties.Settings.Default.SaveLocation;
             dateTimePicker1.MaxDate = DateTime.Now;
-            dateTimePicker2.MaxDate = DateTime.Now;
+            //dateTimePicker2.MaxDate = DateTime.Now;
             //MessageBox.Show("Welcome");
 
         }
@@ -109,8 +110,7 @@ namespace Vidheya_GetBhavCopy
                 string mydate = sthisday + "/" + monthsel + "/" + sthisyear;
                 string DLink = "http://www.nseindia.com/content/historical/EQUITIES/" + thisyear + "/" + monthsel + "/cm" + sthisday + monthsel + thisyear + "bhav.csv.zip";
                 string SaveFileTarget = GetLocation();
-                string SFile = SaveFileTarget+sthisday + "-" + monthsel + "-" + thisyear;
-
+                string SFile = SaveFileTarget+"/"+sthisday + "_" + monthsel + "_" + thisyear;
                 // string SaveFileName= sthisday + "-" + monthsel + "-" + thisyear ;
                 WebClient webClient = new WebClient();
                 webClient.Headers[HttpRequestHeader.Accept] = "text/html,application/xhtml+xml,application/xml;q=0.9,/;q=0.8";
@@ -121,6 +121,38 @@ namespace Vidheya_GetBhavCopy
                 while (webClient.IsBusy) ;
                 FastZip zip = new FastZip();
                 zip.ExtractZip(SFile, SaveFileTarget, "");
+                //Console.WriteLine(SaveFileTarget);
+                string path = @SaveFileTarget+"/cm"+sthisday+monthsel+thisyear+"bhav.csv";
+                string converted = @SFile + "_Converted.csv";
+                StreamWriter sw = new StreamWriter(@converted);
+                StreamReader sr = new StreamReader(@path);
+                while (!sr.EndOfStream)
+                {
+                    string line = sr.ReadLine();
+                    string[] results = line.Split(',');
+                    string Symbol = results[0].ToString();
+                    string Open = results[2].ToString();
+                    string High = results[3].ToString();
+                    string Low = results[4].ToString();
+                    string Close = results[5].ToString();
+                    string Last = results[6].ToString();
+                    string Volume = results[8].ToString();
+                    string Date = results[10].ToString();
+                    //MessageBox.Show(Symbol + " " + Open + " " + High + " " + Low + " " + Close + " " +Last +" "+Volume+" "+Date);
+                    string processedline = Symbol + "," + Date + "," + Open + "," + High + "," + Low + "," + Close + "," + Last + "," + Volume;
+                    sw.WriteLine(processedline);
+                }
+                sr.Close();
+                sw.Close();
+                File.Delete(SFile);
+                File.Delete(@path);
+                MessageBox.Show("Done");
+
+
+
+                //string[] lines = System.IO.File.ReadAllLines(SaveFileTarget);
+                //Console.WriteLine(lines);
+
             }
         }
         private void NotValidDay()
@@ -142,6 +174,11 @@ namespace Vidheya_GetBhavCopy
         private void Completed(object sender, AsyncCompletedEventArgs e)
         {
             MessageBox.Show("Download completed!");
+        }
+
+        private void Download_Click(object sender, EventArgs e)
+        {
+
         }
 
     }
